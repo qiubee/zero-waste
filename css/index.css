@@ -1,0 +1,109 @@
+/* variables */
+:root {
+  --primary-color: #4f4f50;
+  --secondary-color: #f5da93;
+  --tertiary-color: #fbb673;
+  --bg-color: #fffefc;
+}
+
+/* fonts */
+@font-face {
+    font-family: Ageo;
+    font-weight: 400;
+    src: url("fonts/Ageo.otf") format("opentype");
+}
+
+@font-face {
+    font-family: Ageo;
+    font-weight: 700;
+    src: url("fonts/Ageo-Bold.otf") format("opentype");
+}
+
+@font-face {
+    font-family: Helvetica;
+    font-weight: 700;
+    src: url("fonts/Helvetica-Bold.otf") format("opentype");
+}
+
+/* set margin & padding to default */
+body, nav ul, h1, h2, h3, p {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+}
+
+h1, h2, h3, nav a {
+  font-family: Ageo, "Helvetica Neue", sans-serif;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+p {
+  font-family: Helvetica, sans-serif;
+  font-weight: 400;
+  color: var(--primary-color);
+}
+
+header {
+  background-color: var(--secondary-color);
+}
+
+nav ul {
+  display: flex;
+}
+
+nav li {
+  list-style: none;
+  margin: 2em 2em 0 2em;
+}
+
+nav a {
+  font-size: 1.1em;
+  text-decoration: none;
+  color: var(--bg-color);
+}
+
+img {
+  display: flex;
+  width: 30em;
+  padding-right: 1em;
+  margin: -1.25em auto 0 auto;
+}
+
+body > svg {
+  margin-top: -0.9em;
+}
+
+h1 {
+  text-align: center;
+  margin: 1em 0 0.5em 0;
+  font-size: 3.5em;
+}
+
+article > p {
+  text-align: center;
+  max-width: 40em;
+  margin: auto;
+}
+
+#heatmap svg path {
+  fill: none;
+}
+
+#heatmap svg g:last-of-type path {
+  stroke: #3f3f3f;
+  stroke-width: 0.1em;
+}
+
+#heatmap svg g:first-of-type path {
+  fill: aliceblue;
+  stroke: #8C6262;
+  stroke-width: 0.01em;
+}
+
+#heatmap rect {
+  visibility: hidden;
+}
