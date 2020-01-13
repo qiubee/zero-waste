@@ -2,17 +2,15 @@
   "name": "zero-waste",
   "version": "1.0.0",
   "description": "Visualising the waste in the city of Amsterdam",
-  "main": "index.js",
+  "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "datavisualisation",
     "visualisation",
-    "d3",
-    "javascript"
+    "d3"
   ],
   "author": "qiubee",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {}
 }
