@@ -3,8 +3,8 @@
 visualize();
 
 async function visualize() {
-const data = await d3.json("data/data(part).json");
-drawMap(data);
+let data = await d3.json("data/data(part).json");
+data = await drawMap(data);
 createHeatmap(data);
 createBarChart(data);
 }
@@ -13,13 +13,15 @@ async function drawMap(data) {
     // Heatmap (http://www.d3noob.org/2014/02/generate-heatmap-with-leafletheat-and.html)
     // https://bl.ocks.org/mbostock/3074470, https://observablehq.com/@d3/volcano-contours
     // & https://github.com/d3/d3-contour
-
-    // Zoom (source: https://bl.ocks.org/mbostock/2206590)
+    
+    // Zoom 
+    // https://bl.ocks.org/mbostock/2206590, https://observablehq.com/@d3/zoom-to-bounding-box
+    // https://bl.ocks.org/mbostock/4699541
 
     const stadsdelen = await d3.json("data/GEBIED_STADSDELEN.json");
     const buurten = await d3.json("data/GEBIED_BUURTEN_EXWATER.json");
 
-    const width = 675;
+    const width = 680;
     const height = 485;
     // const proj = d3.geoMercator().scale(100000).translate([-8250, 107850]);
     // const proj = d3.geoMercator().scale(150000).translate([-12375, 161800]);
@@ -47,7 +49,7 @@ async function drawMap(data) {
         .append("path")
         .attr("d", path)
         .on("click", function (d) {
-            // zoom.call(this, d);
+            zoom.call(this, d);
             addBuurten.call(this, d);
         });
 
@@ -83,7 +85,6 @@ async function drawMap(data) {
     }
 
     function addBuurten(d) {
-
         svg.select("#buurten").remove();
 
         let data = [];
@@ -111,7 +112,13 @@ async function drawMap(data) {
         
         svg.select("g").selectAll("path")
             .classed("active", centered && function (d) { return d === centered; });
+
+        svg.select("g").transition()
+            .duration(600)
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")");
     }
+
+    return data;
 }
 
 function createHeatmap(data) {
@@ -214,15 +221,24 @@ function createHeatmap(data) {
     
     const categorie = d3.map(dataset, function (d) {return d.categorie;}).keys();
     const dag = d3.map(dataset, function (d) {return d.dag;}).keys();
-    const width = 700;
-    const height = 700;
+    const width = 1000;
+    const height = 900;
+    const margin = {left: 280, top: 180};
+    const labels = ["0", "1 - 50", "50 - 100", "100 - 500", "500 - 1000", "1000 - 5000", "5000+"];
+
+    const colors = d3.scaleThreshold()
+    .domain([0, 1, 50, 100, 500, 1000, 5000])
+    .range(["#f9f3cf", "#f9f3cf", "#f5da93", "#f79767", "#f0594e", "#9b3040", "#5c1c26", "#240C10"]);
 
     const svg = d3.select("#comparison-chart")
         .append("svg")
-        .attr("width", width + 200)
-        .attr("height", height + 50)
+        .attr("width", width + margin.left)
+        .attr("height", height + margin.top)
         .append("g")
-        .attr("transform", "translate(" + 200 + "," + 50 + ")");
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    const legend = svg.append("g")
+        .attr("transform", "translate(" + (margin.left / 16.75) + "," + (-margin.top / 1.5) + ")");
 
     const x = d3.scaleBand()
         .range([0, width])
@@ -234,20 +250,16 @@ function createHeatmap(data) {
         .domain(categorie)
         .padding(0.04);
 
-    const colors = d3.scaleThreshold()
-    .domain([1, 50, 100, 500, 1000, 5000])
-    .range(["#f9f3cf", "#f5da93", "#f79767", "#f0594e", "#9b3040", "#5c1c26"]);
-
     svg.append("g")
-        .attr("transform", "translate(0, -5)")
+        .attr("transform", "translate(0, -6)")
         .call(d3.axisTop(x).tickSize(0))
         .select(".domain").remove();
     
     svg.append("g")
-        .attr("transform", "translate(-5, 0)")
+        .attr("transform", "translate(-12, 0)")
         .call(d3.axisLeft(y).tickSize(0))
         .selectAll(".tick text")
-        .call(wrap, 175);
+        .call(wrap, 260);
 
     svg.select(".domain").remove();
 
@@ -262,6 +274,32 @@ function createHeatmap(data) {
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
         .style("fill", function(d) { return colors(d.afval); } );
+
+    legend.append("text")
+        .text("Aantal afvalzakken")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(" + (width / 2.055) + ", -20)");
+        
+
+    legend.selectAll("g")
+        .data(colors.domain())
+        .enter()
+        .append("g")
+        .attr("transform", function (d, i) {
+            return "translate(" + (i * 140) + ", 0)";
+        })
+        .append("rect")
+        .attr("width", 130)
+        .attr("height", 13)
+        .attr("fill", colors);
+
+    legend.selectAll("g")
+        .append("text")
+        .text(function (d, i) {
+            return labels[i];
+        })
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(65, 40)");
 }
 
 function createBarChart(data) {
@@ -349,6 +387,30 @@ function wrap(text, width) {
                             .attr("dy", ++lineNumber * lineHeight + dy + "em")
                             .text(word);
             }
+        }
+
+        // fix positioning
+        switch (text.node().childNodes.length) {
+            case 2:
+                d3.select(this)
+                    .attr("transform", "translate(0,-10)");
+                break;
+            case 3:
+                d3.select(this)
+                    .attr("transform", "translate(0,-18)")
+                    .select("tspan:nth-of-type(2)")
+                    .attr("dy", function (d) {
+                        dy = Number(this.getAttribute("dy").replace("em", ""));
+                        return dy -0.2 + "em";
+                    });
+                
+                d3.select(this)
+                    .select("tspan:last-of-type")
+                    .attr("dy", function (d) {
+                        dy = Number(this.getAttribute("dy").replace("em", ""));
+                        return dy -1.25 + "em";
+                    });
+                break;
         }
     });
 }
