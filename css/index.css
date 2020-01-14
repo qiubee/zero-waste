@@ -4,6 +4,9 @@
   --secondary-color: #f5da93;
   --tertiary-color: #fbb673;
   --bg-color: #fffefc;
+  --font-size-h2: 3em;
+  --font-size-h3: 1.75em;
+  --font-size-p: 1.1em;
 }
 
 /* fonts */
@@ -42,13 +45,21 @@ h1, h2, h3, nav a {
 }
 
 p {
-  font-family: Helvetica, sans-serif;
+  font-family: Ageo, sans-serif;
   font-weight: 400;
+  font-size: var(--font-size-p);
   color: var(--primary-color);
 }
 
-header {
+a {
+  text-decoration: none;
+  color: #0ba5cb;
+  font-weight: 700;
+}
+
+nav {
   background-color: var(--secondary-color);
+  padding-bottom: 10em;
 }
 
 nav ul {
@@ -66,44 +77,130 @@ nav a {
   color: var(--bg-color);
 }
 
-img {
-  display: flex;
-  width: 30em;
-  padding-right: 1em;
-  margin: -1.25em auto 0 auto;
+body > svg:first-of-type {
+  position: absolute;
+  margin: -6em 21em;
+  width: 15em;
+  fill: var(--bg-color);
 }
 
-body > svg {
-  margin-top: -0.9em;
+img {
+  display: flex;
+  width: 42em;
+  margin: -37.5em auto 15em auto;
+}
+
+article {
+  max-width: 80em;
+  margin: auto;
 }
 
 h1 {
   text-align: center;
-  margin: 1em 0 0.5em 0;
-  font-size: 3.5em;
+  margin: 1em 0 0.25em 0;
+  font-size: 4em;
 }
 
 article > p {
-  text-align: center;
   max-width: 40em;
-  margin: auto;
+  margin: 0 auto 7.5em auto;
+  font-size: var(--font-size-p);
+  text-align: center;
+  line-height: 1.4em;
+}
+
+section {
+  margin: 20em 0;
+}
+
+section h2 {
+  font-size: var(--font-size-h2);
+  margin-bottom: 1em;
+}
+
+section h3 {
+  font-size: var(--font-size-h3);
+  margin-bottom: 0.25em;
+}
+
+section:first-of-type {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+section:first-of-type div {
+  max-width: 25em;
+  margin: auto 0;
+}
+
+section:first-of-type p:first-of-type {
+  margin-bottom: 3em;
+}
+
+section:first-of-type h2:before {
+  content: "1";
+  display: flex;
+  position: absolute;
+  margin: -0.65em -0.31em;
+  font-family: Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 3.5em;
+  color: #fdf1e1;
+  z-index: -1;
 }
 
 #heatmap svg path {
   fill: none;
+  stroke: #3f3f3f;
 }
 
 #heatmap svg g:last-of-type path {
-  stroke: #3f3f3f;
-  stroke-width: 0.1em;
+  stroke-width: 0.05em;
 }
 
 #heatmap svg g:first-of-type path {
-  fill: aliceblue;
-  stroke: #8C6262;
-  stroke-width: 0.01em;
+  fill: #dcd1bf;
+  stroke-width: 0.1em;
 }
 
-#heatmap rect {
-  visibility: hidden;
+section:nth-of-type(2) h2 {
+  margin: 0 0 0.5em 1.5em;
+}
+
+section:nth-of-type(2) h2:before {
+  content: "2";
+  display: flex;
+  position: absolute;
+  margin: -0.65em -0.4em;
+  font-family: Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 3.5em;
+  color: #fdf1e1;
+  z-index: -1;
+}
+
+#comparison-chart svg g > g:first-of-type > text {
+  font-family: Ageo, sans-serif;
+  font-weight: 700;
+  font-size: 1.25em;
+}
+
+#comparison-chart svg g > g:nth-of-type(2) g text {
+  font-family: Ageo, sans-serif;
+  font-weight: 700;
+  font-size: 1.75em;
+}
+
+#comparison-chart svg g > g:first-of-type g text {
+  font-family: Helvetica, sans-serif;
+  font-weight: 400;
+  font-size: 0.85em;
+}
+
+#comparison-chart svg g > g:last-of-type g text {
+  font-family: Helvetica, sans-serif;
+  font-weight: 400;
+  font-size: 1.5em;
+  width: 1em;
 }
