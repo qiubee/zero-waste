@@ -3,16 +3,16 @@
 visualize();
 
 async function visualize() {
-let data = await d3.json("data/data(part).json");
-data = await drawMap(data);
-createHeatmap(data);
-createBarChart(data);
+let data = await d3.json("data/data(20).json");
+let filter = await drawMap(data);
+createHeatmap(filter);
+createBarChart(filter, data);
 }
 
 async function drawMap(data) {
     // Heatmap (http://www.d3noob.org/2014/02/generate-heatmap-with-leafletheat-and.html)
     // https://bl.ocks.org/mbostock/3074470, https://observablehq.com/@d3/volcano-contours
-    // & https://github.com/d3/d3-contour
+    // & https://github.com/d3/d3-contourhttps://github.com/d3/d3-contour
     
     // Zoom 
     // https://bl.ocks.org/mbostock/2206590, https://observablehq.com/@d3/zoom-to-bounding-box
@@ -23,9 +23,6 @@ async function drawMap(data) {
 
     const width = 680;
     const height = 485;
-    // const proj = d3.geoMercator().scale(100000).translate([-8250, 107850]);
-    // const proj = d3.geoMercator().scale(150000).translate([-12375, 161800]);
-    // const proj = d3.geoMercator().scale(130000).translate([-10700, 140200]);
     const proj = d3.geoMercator().scale(110000).translate([-9075, 118630]);
     const path = d3.geoPath().projection(proj);
 
@@ -33,14 +30,6 @@ async function drawMap(data) {
         .append("svg")
         .attr("width", width)
         .attr("height", height);
-        // .attr("viewBox", "0 0 " + width + " " + height);
-    
-    // svg.append("g")
-    //     .selectAll("path")
-    //     .data(buurten.features)
-    //     .enter()
-    //     .append("path")
-    //     .attr("d", path);
     
     svg.append("g")
         .selectAll("path")
@@ -51,33 +40,68 @@ async function drawMap(data) {
         .on("click", function (d) {
             zoom.call(this, d);
             addBuurten.call(this, d);
+            // filterData.call(this, d);
         });
+
+    // svg.select("g") // clip map to add function to reset zoom
+    //     .append("rect")
+    //     .attr("x", 125)
+    //     .attr("y", 75)
+    //     .attr("height", 100)
+    //     .attr("width", 200)
+    //     .attr("fill", "black");
 
     // Zoom function from Mike Bostock (source: https://bl.ocks.org/mbostock/2206590)
     function zoom(d) {
         let x, y, k, centered;
-
-        console.log(this.getBBox().width / width);
+        // console.log(this.__data__.properties.Stadsdeel + ":", this.__data__.properties.Stadsdeel_code);
 
         if (d && centered !== d) {
             let centroid = path.centroid(d);
             x = centroid[0];
             y = centroid[1];
-            k = this.getBBox().width / width + 1;
+            switch (this.__data__.properties.Stadsdeel_code) {
+                case "A":
+                    y += -5;
+                    k = 4.5;
+                    break;
+                case "B":
+                    x += 15;
+                    k = 2.2;
+                    break;
+                case "E":
+                    y += 5;
+                    k = 3.4;
+                    break;
+                case "F":
+                    y += 8;
+                    k = 2;
+                    break;
+                case "K":
+                    x += -16;
+                    k = 3.5;
+                    break;
+                case "M":
+                    y += 20;
+                    x += 10;
+                    k = 2.25;
+                    break;
+                case "N":
+                    x += - 15;
+                    k = 1.5;
+                    break;
+                case "T":
+                    x += 10;
+                    y += 5;
+                    k = 2.8;
+                    break;
+            }
             centered = d;
-        } 
-
-        // if (d.properties.Stadsdeel_code == "N") {
-        //     let centroid = path.centroid(d);
-        //     x = centroid[0];
-        //     y = centroid[1];
-        //     k = 1.5;
-        //     centered = d;
-        // }
+        }
 
         svg.select("g")
             .selectAll("path")
-            .classed("active", centered && function (d) { return d === centered; });
+            .classed("zoom", centered && function (d) { return d === centered; });
 
         svg.select("g").transition()
             .duration(600)
@@ -94,7 +118,8 @@ async function drawMap(data) {
             }
         });
 
-        svg.append("g")
+        svg.select("g")
+            .append("g")
             .attr("id", "buurten")
             .selectAll("path")
             .data(data)
@@ -104,20 +129,37 @@ async function drawMap(data) {
 
     }
 
+    function filterData (d) {
+        // console.log(data);
+        let f = [];
+        data.map(function (item) {
+            if (item.stadsdeel === d.properties.Stadsdeel_code) {
+                f.push(item);
+            }
+        });
+        if (f.length > 1) {
+            return data = f;
+        } else {
+            return data = null;
+        }
+    }
+
     function resetZoom(d) {
+            let zoom = d3.select(".zoom");
+            zoom.classed("zoom", false);
+            zoom = d3.select(null);
+
             x = width / 2;
             y = height / 2;
             k = 1;
             centered = null;
-        
-        svg.select("g").selectAll("path")
-            .classed("active", centered && function (d) { return d === centered; });
 
-        svg.select("g").transition()
-            .duration(600)
-            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")");
+            svg.select("g").transition()
+                .duration(600)
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")");
     }
 
+    // console.log(data);
     return data;
 }
 
@@ -279,7 +321,6 @@ function createHeatmap(data) {
         .text("Aantal afvalzakken")
         .attr("text-anchor", "middle")
         .attr("transform", "translate(" + (width / 2.055) + ", -20)");
-        
 
     legend.selectAll("g")
         .data(colors.domain())
@@ -302,7 +343,7 @@ function createHeatmap(data) {
         .attr("transform", "translate(65, 40)");
 }
 
-function createBarChart(data) {
+function createBarChart(filteredData, data) {
     const dataset = d3.nest().key(function (d) {
             return d.categorie;
         })
