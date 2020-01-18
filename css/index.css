@@ -91,10 +91,16 @@ body > svg:first-of-type {
   fill: var(--bg-color);
 }
 
-img {
+img[src$=".png"] {
   display: flex;
   width: 42em;
   margin: -37.5em auto 15em auto;
+}
+
+img[src$=".gif"] {
+  display: flex;
+  width: 85em;
+  margin: -48em auto 4.25em auto;
 }
 
 article {
@@ -111,7 +117,7 @@ h1 {
 article > p {
   max-width: 40em;
   margin: 0 auto 7.5em auto;
-  font-size: var(--font-size-p);
+  font-size: 1.2em;
   text-align: center;
   line-height: 1.4em;
 }
@@ -203,7 +209,7 @@ section:nth-of-type(2) h2:before {
 #comparison-chart svg g > g:first-of-type g text {
   font-family: Helvetica, sans-serif;
   font-weight: 400;
-  font-size: 0.85em;
+  font-size: 0.9em;
 }
 
 #comparison-chart svg g > g:last-of-type g text {
