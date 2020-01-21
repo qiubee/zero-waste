@@ -51,7 +51,7 @@ h1, h2, h3, nav a {
 }
 
 p {
-  font-family: Ageo, sans-serif;
+  font-family: Helvetica, sans-serif;
   font-weight: 400;
   font-size: var(--font-size-p);
   color: var(--primary-color);
@@ -115,15 +115,19 @@ h1 {
 }
 
 article > p {
-  max-width: 40em;
+  max-width: 50em;
   margin: 0 auto 7.5em auto;
-  font-size: 1.2em;
+  font-size: var(--font-size-p);
   text-align: center;
-  line-height: 1.4em;
+  line-height: 1.5em;
+}
+
+article > p strong {
+  line-height: 1.2em;
 }
 
 section {
-  margin: 20em 0;
+  margin: 15em 0;
 }
 
 section h2 {
@@ -163,13 +167,27 @@ section:first-of-type h2:before {
   z-index: -1;
 }
 
+#heatmap svg {
+  margin: auto 0;
+}
+
+#heatmap rect {
+  fill: none;
+  pointer-events: all;
+}
+
 #heatmap svg path {
-  stroke: #3f3f3f;
+  stroke: white;
+}
+
+#heatmap svg path:hover {
+  cursor: pointer;
 }
 
 #heatmap svg > g > path {
-/*   fill: #dcd1bf; */
-  fill: aqua;
+/*   fill: #dfd08d; */
+/*   fill: #dcd0bf; */
+  fill: rgb(230, 159, 52);
   stroke-width: .1em;
 } 
 
@@ -178,8 +196,19 @@ section:first-of-type h2:before {
   stroke-width: 0.05em;
 }
 
+section:nth-of-type(2) div {
+  display: flex;
+  justify-content: space-between;
+}
+
 section:nth-of-type(2) h2 {
+  max-width: 13em;
   margin: 0 0 0.5em 1.5em;
+}
+
+section:nth-of-type(2) p {
+  max-width: 25em;
+  margin: 2em 0;
 }
 
 section:nth-of-type(2) h2:before {
@@ -194,16 +223,17 @@ section:nth-of-type(2) h2:before {
   z-index: -1;
 }
 
+#comparison-chart svg > g > text {
+  font-family: Ageo, sans-serif;
+  font-weight: 700;
+  fill: #0ba5cb;
+  font-size: 1.75em;
+}
+
 #comparison-chart svg g > g:first-of-type > text {
   font-family: Ageo, sans-serif;
   font-weight: 700;
   font-size: 1.25em;
-}
-
-#comparison-chart svg g > g:nth-of-type(2) g text {
-  font-family: Ageo, sans-serif;
-  font-weight: 700;
-  font-size: 1.75em;
 }
 
 #comparison-chart svg g > g:first-of-type g text {
@@ -212,9 +242,32 @@ section:nth-of-type(2) h2:before {
   font-size: 0.9em;
 }
 
-#comparison-chart svg g > g:last-of-type g text {
+#comparison-chart svg g > g:nth-of-type(2) g text {
+  font-family: Ageo, sans-serif;
+  font-weight: 700;
+  font-size: 1.75em;
+}
+
+#comparison-chart svg g > g:nth-of-type(3) g text {
   font-family: Helvetica, sans-serif;
   font-weight: 400;
   font-size: 1.5em;
   width: 1em;
 }
+
+section:nth-of-type(3) h2 {
+  margin-left: 0.5em; 
+}
+
+section:nth-of-type(3) h2:before {
+  content: "3";
+  display: flex;
+  position: absolute;
+  margin: -0.65em -0.4em;
+  font-family: Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 3.5em;
+  color: #fdf1e1;
+  z-index: -1;
+}
+
