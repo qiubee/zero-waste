@@ -3,7 +3,7 @@
 visualize();
 
 async function visualize() {
-let data = await d3.json("data/data(complete).json");
+let data = await d3.json("data/data.json");
 drawMap(data);
 createHeatmap(data);
 createBarChart(data);
@@ -24,8 +24,10 @@ async function drawMap(data) {
 
     const width = 680;
     const height = 485;
+    // const contours = d3.contours().size([width, height]);
     const proj = d3.geoMercator().scale(110000).translate([-9075, 118630]);
     const path = d3.geoPath().projection(proj);
+    // const thresholds = [0, 1, 50, 100, 500, 1000, 5000];
 
     const svg =  d3.select("#heatmap")
         .append("svg")
@@ -50,10 +52,21 @@ async function drawMap(data) {
         });
 
 
+    // data = setupDataMap(data);
+    // console.log(data);
+
+    // svg.append("g")
+    //     .attr("stroke", "white")
+    //     .attr("stroke-width", 0,03)
+    //     .selectAll("path")
+    //     .data(data)
+    //     .enter()
+    //     .append("path")
+    //     .attr("d", path(contours.contour(data, thresholds)));
+
     // Zoom function from Mike Bostock (source: https://bl.ocks.org/mbostock/2206590)
     function zoom(d) {
         let x, y, k, centered;
-        // console.log(this.__data__.properties.Stadsdeel + ":", this.__data__.properties.Stadsdeel_code);
 
         if (d && centered !== d) {
             let centroid = path.centroid(d);
@@ -384,7 +397,7 @@ function fixWrapTitlePosition(text) {
             return;
         }
 
-        // fix Y positioning
+        // fix positioning
         switch (text.node().childNodes.length) {
             case 1:
                 return;
@@ -581,7 +594,9 @@ function updateHeatmap(data, el = "Amsterdam") {
                 .style("filter", "drop-shadow(0 0 1em rgba(0, 0, 0, .25))")
                 .style("cursor", "pointer");
 
+                // place selected element on top
                 // https://stackoverflow.com/questions/13595175/updating-svg-element-z-index-with-d3
+
                 // svg.selectAll(".data").sort(function (a, b) {
                 //     if (el._groups[0][0].previousSibling !== null) return -1;
                 //     else return 1;
