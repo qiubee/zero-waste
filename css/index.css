@@ -171,7 +171,7 @@ section:first-of-type h2:before {
   margin: auto 0;
 }
 
-#heatmap rect {
+#heatmap svg > g:first-of-type rect {
   fill: none;
   pointer-events: all;
 }
@@ -185,14 +185,22 @@ section:first-of-type h2:before {
 }
 
 #heatmap svg > g > path {
-/*   fill: #dfd08d; */
-/*   fill: #dcd0bf; */
-  fill: rgb(230, 159, 52);
   stroke-width: .1em;
-} 
+}
+
+#heatmap svg > g:last-of-type > text:first-of-type {
+  font-family: Ageo, sans-serif;
+  font-weight: 700;
+  font-size: 1.2em;
+}
+
+#heatmap svg > g:last-of-type g text {
+  font-family: Helvetica, sans-serif;
+  font-weight: 400;
+  font-size: 0.8em;
+}
 
 #buurten path {
-  fill: #dcd1bf;
   stroke-width: 0.05em;
 }
 
