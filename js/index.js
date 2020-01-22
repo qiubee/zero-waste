@@ -26,7 +26,8 @@ async function drawMap(data) {
     const width = 750;
     const height = 485;
     // const proj = d3.geoMercator().scale(110000).translate([-9075, 118630]);
-    const proj = d3.geoMercator().scale(115000).translate([-9470, 124023]);
+    // const proj = d3.geoMercator().scale(115000).translate([-9470, 124023]);
+    const proj = d3.geoMercator().scale(110000).translate([-9040, 118630]);
     const path = d3.geoPath().projection(proj);
     const margin = {top: 100};
     const labels = {
