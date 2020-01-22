@@ -1,6 +1,6 @@
 # Zero Waste
 
-![Zero Waste title](css/images/zerowaste.png)
+![Zero Waste title](css/images/poster.jpg)
 
 Momenteel rijden er verschillende vrachtwagens op verschillende tijdstippen door Amsterdam om bedrijfsafval op te halen. Dit wordt gedaan door verschillende particuliere bedrijven. Dit betekent dat er soms wel **16 vrachtwagens per dag** door drukke winkelstraten rijden! Allemaal om net op een ander moment het afval op te halen. De Gemeente Amsterdam wil met betrokken partijen dit verbeteren en werkt samen met de Hogeschool van Amsterdam om tot nieuwe oplossingen te komen. Om hierbij te helpen is op deze site gevisualiseerd hoeveel afval er wordt opgehaald en waar dat het meest gebeurd.
 
