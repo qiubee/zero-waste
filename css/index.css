@@ -91,7 +91,7 @@ body > svg:first-of-type {
   fill: var(--bg-color);
 }
 
-img[src$=".png"] {
+img[src$="zerowaste.png"] {
   display: flex;
   width: 42em;
   margin: -37.5em auto 15em auto;
@@ -204,6 +204,21 @@ section:first-of-type h2:before {
   stroke-width: 0.05em;
 }
 
+/* description */
+section:nth-of-type(2) {
+  margin-bottom: 1.5em;
+}
+
+article > p:last-of-type {
+  max-width: 75em;
+  margin: 0 auto 9.5em 0;
+  font-size: 1em;
+  text-align: justify;
+  line-height: initial;
+}
+
+/* ----------- */
+
 section:nth-of-type(2) div {
   display: flex;
   justify-content: space-between;
@@ -279,3 +294,11 @@ section:nth-of-type(3) h2:before {
   z-index: -1;
 }
 
+/* bar chart */
+
+section:nth-of-type(3) img {
+  margin-left: -10em;
+  margin-bottom: -7.5em;
+  margin: 0 0 -7.5em -10em;
+  width: 65em;
+}
