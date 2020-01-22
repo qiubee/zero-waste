@@ -22,47 +22,109 @@ async function drawMap(data) {
     const stadsdelen = await d3.json("data/GEBIED_STADSDELEN.json");
     const buurten = await d3.json("data/GEBIED_BUURTEN_EXWATER.json");
 
-    const width = 680;
+    // const width = 680;
+    const width = 750;
     const height = 485;
-    // const contours = d3.contours().size([width, height]);
-    const proj = d3.geoMercator().scale(110000).translate([-9075, 118630]);
+    // const proj = d3.geoMercator().scale(110000).translate([-9075, 118630]);
+    const proj = d3.geoMercator().scale(115000).translate([-9470, 124023]);
     const path = d3.geoPath().projection(proj);
-    // const thresholds = [0, 1, 50, 100, 500, 1000, 5000];
-
+    const margin = {top: 100};
+    const labels = {
+    stadsdelen: ["Onbekend", "0", "1 - 5K", "5K - 10K", "10K - 500K", "500K - 1M", "1M - 5M", "5M+"],
+    buurten: ["Onbekend", "0", "1 - 50", "50 - 100", "100 - 500", "500 - 1000", "1000 - 5000", "5000+"]
+    };
+    const colorScale = {stadsdelen: d3.scaleThreshold()
+    .domain([-1, 0, 1, 5000, 10000, 500000, 1000000, 5000000])
+    .range(["#dcd1bf", "#dcd1bf", "#f9f3cf", "#f5da93", "#f79767", "#f0594e", "#9b3040", "#5c1c26", "#240C10"]),
+    buurten: d3.scaleThreshold()
+    .domain([-1, 0, 1, 50, 100, 500, 1000, 5000])
+    .range(["#dcd1bf", "#dcd1bf", "#f9f3cf", "#f5da93", "#f79767", "#f0594e", "#9b3040", "#5c1c26", "#240C10"])};
+    
     const svg =  d3.select("#heatmap")
         .append("svg")
         .attr("width", width)
+        .attr("height", height + margin.top);
+
+    const clipPath = svg.append("defs")
+        .append("clipPath")
+        .attr("id", "clip");
+
+    const map = svg.append("g")
+        .attr("transform", "translate(0," + margin.top + ")")
+        .attr("clip-path", "url(#clip)");
+
+    const legend = svg.append("g")
+        .attr("transform", "translate(" + 0 + "," + 15 + ")")
+        .attr("width", width);
+
+    clipPath.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", width)
         .attr("height", height);
 
-    svg.append("rect")
+    map.append("rect")
         .attr("height", height)
         .attr("width", width)
         .on("click",  resetZoom);
     
-    svg.append("g")
+    map.append("g")
         .selectAll("path")
         .data(stadsdelen.features)
         .enter()
         .append("path")
         .attr("d", path)
+        .attr("fill", function (d) {
+            let afval = 0;
+            let nodata = true;
+            for (let item of data) {
+                if (d.properties.Stadsdeel_code === item.stadsdeel) {
+                    nodata = false;
+                    const arr = Object.entries(item.afval);
+                    let total = 0;
+                    for (let dag of arr) {
+                        total += dag[1];
+                    }
+                    afval += total;
+                }
+                d.total = afval;
+            }
+            if (nodata === true) {
+                d.total = -1;
+            }
+            return colorScale.stadsdelen(d.total);
+        })
         .on("click", function (d) {
             zoom.call(this, d);
             addBuurten.call(this, d);
             filterData.call(this, d);
         });
 
+        legend.append("text")
+            .text("Aantal afvalzakken")
+            .attr("text-anchor", "middle")
+            .attr("transform", "translate(" + (width / 2) + ", 0)");
 
-    // data = setupDataMap(data);
-    // console.log(data);
+        legend.selectAll("g")
+            .data(colorScale.stadsdelen.domain())
+            .enter()
+            .append("g")
+            .attr("transform", function (d, i) {
+                return "translate(" + (i * width/7.8) + ", 20)";
+            })
+            .append("rect")
+            .attr("width", 80)
+            .attr("height", 9)
+            .attr("fill", colorScale.stadsdelen);
 
-    // svg.append("g")
-    //     .attr("stroke", "white")
-    //     .attr("stroke-width", 0,03)
-    //     .selectAll("path")
-    //     .data(data)
-    //     .enter()
-    //     .append("path")
-    //     .attr("d", path(contours.contour(data, thresholds)));
+        const text = legend.selectAll("g")
+            .append("text")
+            .text(function (d, i) {
+                return labels.stadsdelen[i];
+            })
+            .attr("text-anchor", "middle")
+            .attr("transform", "translate(" + 80/2 + "," + 25 + ")");
+
 
     // Zoom function from Mike Bostock (source: https://bl.ocks.org/mbostock/2206590)
     function zoom(d) {
@@ -111,37 +173,66 @@ async function drawMap(data) {
             centered = d;
         }
 
-        svg.select("g")
+        map.select("g")
             .selectAll("path")
             .classed("zoom", centered && function (d) { return d === centered; });
 
-        svg.select("g").transition()
+        map.select("g").transition()
             .duration(600)
             .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")");
+
     }
 
     function addBuurten(d) {
-        svg.select("#buurten").remove();
+        map.select("#buurten").remove();
 
-        let data = [];
+        let filteredBuurten = [];
         buurten.features.map(function (item) {
             if (item.properties.Stadsdeel_code === d.properties.Stadsdeel_code) {
-                data.push(item);
+                filteredBuurten.push(item);
             }
         });
 
-        svg.select("g")
+        map.select("g")
             .append("g")
             .attr("id", "buurten")
             .selectAll("path")
-            .data(data)
+            .data(filteredBuurten)
             .enter()
             .append("path")
             .attr("d", path)
+            .attr("fill", function (d) {
+                if (d.total === undefined) {
+                    let totaal = 0;
+                    let nodata = true;
+                    for (let item of data) {
+                        if (d.properties.Buurt_code === item.buurtcode) {
+                            nodata = false;
+                            totaal += item.totaal;
+                        }
+                    }
+                    d.totaal = totaal;
+                    if (nodata === true) {
+                        d.totaal = -1;
+                    }
+                    return colorScale.buurten(d.totaal);
+                }
+            })
             .on("click", function (d) {
+                if (this.__data__.totaal === -1) {
+                    return;
+                }
                 filterData.call(this, d);
+            })
+            .on("mouseover", function (d) {
+                if (this.__data__.totaal === -1) {
+                    d3.select(this).style("cursor", "default");
+                }
             });
 
+            text.text(function (d, i) {
+                return labels.buurten[i];
+            });
     }
 
     function filterData (d) {
@@ -196,13 +287,17 @@ async function drawMap(data) {
             k = 1;
             centered = null;
 
-            svg.select("g")
+            map.select("g")
                 .transition()
                 .duration(600)
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")");
 
-            svg.selectAll("#buurten")
+            map.selectAll("#buurten")
                 .remove();
+
+            text.text(function (d, i) {
+                    return labels.stadsdelen[i];
+            });
 
             updateHeatmap(data);
     }
@@ -219,7 +314,7 @@ function createHeatmap(data) {
     const margin = {left: 280, top: 180, right: 5};
     const labels = ["0", "1 - 50", "50 - 100", "100 - 500", "500 - 1000", "1000 - 5000", "5000+"];
 
-    const colors = d3.scaleThreshold()
+    const colorScale = d3.scaleThreshold()
     .domain([0, 1, 50, 100, 500, 1000, 5000])
     .range(["#f9f3cf", "#f9f3cf", "#f5da93", "#f79767", "#f0594e", "#9b3040", "#5c1c26", "#240C10"]);
 
@@ -266,7 +361,7 @@ function createHeatmap(data) {
         .attr("transform", "translate(" + (width / 2.055) + ", -20)");
 
     legend.selectAll("g")
-        .data(colors.domain())
+        .data(colorScale.domain())
         .enter()
         .append("g")
         .attr("transform", function (d, i) {
@@ -275,7 +370,7 @@ function createHeatmap(data) {
         .append("rect")
         .attr("width", 130)
         .attr("height", 13)
-        .attr("fill", colors);
+        .attr("fill", colorScale);
 
     legend.selectAll("g")
         .append("text")
@@ -551,7 +646,7 @@ function updateHeatmap(data, el = "Amsterdam") {
     const width = 1000;
     const height = 900;
 
-    const colors = d3.scaleThreshold()
+    const colorScale = d3.scaleThreshold()
     .domain([0, 1, 50, 100, 500, 1000, 5000])
     .range(["#f9f3cf", "#f9f3cf", "#f5da93", "#f79767", "#f0594e", "#9b3040", "#5c1c26", "#240C10"]);
 
@@ -575,7 +670,7 @@ function updateHeatmap(data, el = "Amsterdam") {
         .attr("ry", 1)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function(d) { return colors(d.afval); })
+        .style("fill", function(d) { return colorScale(d.afval); })
         .on("mouseover", function(d) {
             if (d.afval === 0) {
                 return;
@@ -645,7 +740,7 @@ function updateHeatmap(data, el = "Amsterdam") {
         .attr("ry", 1)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function(d) { return colors(d.afval); });
+        .style("fill", function(d) { return colorScale(d.afval); });
 
     selection.exit().remove();
 
