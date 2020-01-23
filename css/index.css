@@ -7,6 +7,7 @@
   --font-size-h2: 3em;
   --font-size-h3: 1.75em;
   --font-size-p: 1.1em;
+  --ease-gif: margin-top 0.1s ease-in-out;
 }
 
 /* fonts */
@@ -86,8 +87,8 @@ nav a {
 
 body > svg:first-of-type {
   position: absolute;
-  margin: -6em 21em;
-  width: 15em;
+  margin: -6em 15vw;
+  width: 15vw;
   fill: var(--bg-color);
 }
 
@@ -99,8 +100,47 @@ img[src$="zerowaste.png"] {
 
 img[src$=".gif"] {
   display: flex;
-  width: 85em;
-  margin: -48em auto 4.25em auto;
+  max-width: 85em;
+  width: 100vw;
+  margin: -50vw auto 4.25em auto;
+  margin-top: -50vw;
+}
+
+@media screen and (min-width: 85em) and (max-width: 90em) {
+  img[src$=".gif"] {
+    margin-top: calc(-40vw / 0.82);
+  }
+}
+
+@media screen and (min-width: 90em) and (max-width: 95em) {
+  img[src$=".gif"] {
+    margin-top: calc(-40vw / 0.85);
+  }
+}
+
+@media screen and (min-width: 95em) and (max-width: 100em) {
+  img[src$=".gif"] {
+    margin-top: calc(-40vw / 0.88);
+  }
+}
+
+@media screen and (min-width: 100em) and (max-width: 105em) {
+  img[src$=".gif"] {
+    margin-top: calc(-40vw / 0.9);
+  }
+}
+
+@media screen and (min-width: 105em) and (max-width: 110em) {
+  img[src$=".gif"] {
+    margin-top: calc(-40vw / 0.95);
+  }
+}
+
+@media screen and (min-width: 110em) {
+  img[src$=".gif"] {
+    margin: -48em auto 4.25em auto;
+    margin-top: -48em;
+  }
 }
 
 article {
