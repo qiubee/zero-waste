@@ -58,11 +58,25 @@ async function drawMap(data) {
         .attr("transform", "translate(" + 0 + "," + 15 + ")")
         .attr("width", width);
 
+    const tooltip = d3.select("#heatmap")
+        .append("div");
+
     clipPath.append("rect")
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", width)
         .attr("height", height);
+
+    tooltip.style("position", "absolute")
+        .style("opacity", 0)
+        .style("background-color", "white")
+        .style("filter", "drop-shadow(0 0 0.5em rgba(0, 0, 0, .15))")
+        .style("width", "7em")
+        .style("height", "2.5em")
+        .style("border-radius", "0.5em");
+        
+    const tooltipTitle = tooltip.append("p");
+    const tooltipAfval = tooltip.append("p");
 
     map.append("rect")
         .attr("height", height)
@@ -228,8 +242,58 @@ async function drawMap(data) {
             .on("mouseover", function (d) {
                 if (this.__data__.totaal === -1) {
                     d3.select(this).style("cursor", "default");
+                    // tooltip.style("opacity", 0)
+                    // tooltipTitle.html(d.properties.Buurt);
+                    // tooltipAfval.html("Aantal onbekend");
+                } else {
+                // tooltip.style("opacity", 1)
+                //     // .style("left", 1 + "em")
+                //     // .style("top", 1 + "em")
+
+                // tooltipTitle.html(d.properties.Buurt);
+                // tooltipAfval.html(d.totaal + " afvalzakken");
                 }
+            })
+            .on("mouseout", function (d) {
+                // tooltip.style("opacity", 0)
             });
+
+            // tooltip
+
+                // create a tooltip
+                var Tooltip = d3.select("#div_template")
+                .append("div")
+                .style("opacity", 0)
+                .attr("class", "tooltip")
+                .style("background-color", "white")
+                .style("border", "solid")
+                .style("border-width", "2px")
+                .style("border-radius", "5px")
+                .style("padding", "5px");
+
+                // Three function that change the tooltip when user hover / move / leave a cell
+                var mouseover = function(d) {
+                    Tooltip
+                        .style("opacity", 1);
+                    d3.select(this)
+                        .style("stroke", "black")
+                        .style("opacity", 1);
+                };
+                var mousemove = function(d) {
+                    Tooltip
+                    .html("The exact value of<br>this cell is: " + d.value)
+                    .style("left", (d3.mouse(this)[0]+70) + "px")
+                    .style("top", (d3.mouse(this)[1]) + "px");
+                };
+                var mouseleave = function(d) {
+                    Tooltip
+                        .style("opacity", 0);
+                    d3.select(this)
+                        .style("stroke", "none")
+                        .style("opacity", 0.8);
+                  };
+
+            // ---------------------------------
 
             text.text(function (d, i) {
                 return labels.buurten[i];
